@@ -44,6 +44,7 @@ import { useSetRecoilComponentState } from '@/ui/utilities/state/component-state
 
 const StyledContainer = styled.div`
   flex: 2;
+  min-width: 0;
 `;
 
 type RLSFieldSelectProps = {

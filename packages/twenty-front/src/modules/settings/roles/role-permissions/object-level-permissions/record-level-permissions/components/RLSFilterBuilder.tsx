@@ -11,8 +11,6 @@ import { v4 } from 'uuid';
 import { ActionButton } from '@/action-menu/actions/display/components/ActionButton';
 import { availableFieldMetadataItemsForFilterFamilySelector } from '@/object-metadata/states/availableFieldMetadataItemsForFilterFamilySelector';
 import { type ObjectMetadataItem } from '@/object-metadata/types/ObjectMetadataItem';
-import { AdvancedFilterCommandMenuLogicalOperatorCell } from '@/object-record/advanced-filter/command-menu/components/AdvancedFilterCommandMenuLogicalOperatorCell';
-import { AdvancedFilterCommandMenuRecordFilterOperandSelect } from '@/object-record/advanced-filter/command-menu/components/AdvancedFilterCommandMenuRecordFilterOperandSelect';
 import { AdvancedFilterRecordFilterOptionsDropdown } from '@/object-record/advanced-filter/components/AdvancedFilterRecordFilterOptionsDropdown';
 import { useChildRecordFiltersAndRecordFilterGroups } from '@/object-record/advanced-filter/hooks/useChildRecordFiltersAndRecordFilterGroups';
 import { useGetDefaultFieldMetadataItemForFilter } from '@/object-record/advanced-filter/hooks/useGetDefaultFieldMetadataItemForFilter';
@@ -35,6 +33,8 @@ import { type RecordFilter } from '@/object-record/record-filter/types/RecordFil
 import { getDefaultSubFieldNameForCompositeFilterableFieldType } from '@/object-record/record-filter/utils/getDefaultSubFieldNameForCompositeFilterableFieldType';
 import { getRecordFilterOperands } from '@/object-record/record-filter/utils/getRecordFilterOperands';
 import { RLSFieldSelect } from '@/settings/roles/role-permissions/object-level-permissions/record-level-permissions/components/RLSFieldSelect';
+import { RLSLogicalOperatorCell } from '@/settings/roles/role-permissions/object-level-permissions/record-level-permissions/components/RLSLogicalOperatorCell';
+import { RLSOperandSelect } from '@/settings/roles/role-permissions/object-level-permissions/record-level-permissions/components/RLSOperandSelect';
 import { RLSValueInput } from '@/settings/roles/role-permissions/object-level-permissions/record-level-permissions/components/RLSValueInput';
 import {
   convertPredicateGroupToRecordFilterGroup,
@@ -64,7 +64,7 @@ const StyledFilterRow = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing(4)};
+  gap: ${({ theme }) => theme.spacing(1)};
 `;
 
 const StyledActionButtonWrapper = styled.div`
@@ -381,14 +381,12 @@ const RLSFilterBuilderContent = ({
       }}
     >
       <StyledFilterRow>
-        <AdvancedFilterCommandMenuLogicalOperatorCell
+        <RLSLogicalOperatorCell
           index={index}
           recordFilterGroup={recordFilterGroup}
         />
         <RLSFieldSelect recordFilterId={recordFilter.id} />
-        <AdvancedFilterCommandMenuRecordFilterOperandSelect
-          recordFilterId={recordFilter.id}
-        />
+        <RLSOperandSelect recordFilterId={recordFilter.id} />
         <RLSValueInput recordFilterId={recordFilter.id} />
         <AdvancedFilterRecordFilterOptionsDropdown
           recordFilterId={recordFilter.id}

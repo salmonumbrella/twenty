@@ -14,7 +14,7 @@ import { fieldMetadataItemUsedInDropdownComponentSelector } from '@/object-recor
 import { FormFieldInput } from '@/object-record/record-field/ui/components/FormFieldInput';
 import { useUpsertRecordFilter } from '@/object-record/record-filter/hooks/useUpsertRecordFilter';
 import { currentRecordFiltersComponentState } from '@/object-record/record-filter/states/currentRecordFiltersComponentState';
-import { RLSVariablePicker } from '@/settings/roles/role-permissions/object-level-permissions/record-level-permissions/components/RLSVariablePicker';
+import { createRLSVariablePicker } from '@/settings/roles/role-permissions/object-level-permissions/record-level-permissions/components/RLSVariablePicker';
 import { useRecoilComponentValue } from '@/ui/utilities/state/component-state/hooks/useRecoilComponentValue';
 import { useContext } from 'react';
 import { type JsonValue } from 'type-fest';
@@ -23,7 +23,9 @@ const StyledContainer = styled.div`
   display: flex;
   flex-direction: row;
   align-items: stretch;
-  flex: 1;
+  flex: 3;
+  min-width: 0;
+  max-width: 100%;
 `;
 
 const StyledIconContainer = styled.div`
@@ -57,6 +59,18 @@ const StyledReadOnlyInput = styled.div`
   font-size: ${({ theme }) => theme.font.size.md};
   height: 32px;
   box-sizing: border-box;
+  gap: ${({ theme }) => theme.spacing(1)};
+`;
+
+const StyledMeText = styled.span`
+  color: ${({ theme }) => theme.color.blue};
+`;
+
+const StyledFormFieldInputWrapper = styled.div`
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
 `;
 
 type RLSValueInputProps = {
@@ -149,13 +163,14 @@ export const RLSValueInput = ({ recordFilterId }: RLSValueInputProps) => {
   };
 
   if (isDynamicMode) {
-    const displayLabel = isDefined(workspaceMemberFieldLabel)
-      ? t`Me` + ` / ${workspaceMemberFieldLabel}`
-      : t`Me`;
-
     return (
       <StyledContainer>
-        <StyledReadOnlyInput>{displayLabel}</StyledReadOnlyInput>
+        <StyledReadOnlyInput>
+          <StyledMeText>{t`Me`}</StyledMeText>
+          {isDefined(workspaceMemberFieldLabel) && (
+            <span>{` / ${workspaceMemberFieldLabel}`}</span>
+          )}
+        </StyledReadOnlyInput>
         <StyledIconContainer
           onClick={handleResetToStaticValue}
           aria-label={t`Reset to static value`}
@@ -184,24 +199,21 @@ export const RLSValueInput = ({ recordFilterId }: RLSValueInputProps) => {
     applyObjectFilterDropdownFilterValue(String(value));
   };
 
-  const RLSPickerForThisFilter = ({
-    instanceId,
-  }: {
-    instanceId: string;
-  }) => (
-    <RLSVariablePicker
-      instanceId={instanceId}
-      recordFilterId={recordFilterId}
-      onMeSelect={handleSelectDynamicValue}
-    />
+  const RLSPicker = createRLSVariablePicker(
+    recordFilterId,
+    handleSelectDynamicValue,
   );
 
   return (
-    <FormFieldInput
-      field={fieldDefinition}
-      defaultValue={recordFilter.value}
-      onChange={handleChange}
-      VariablePicker={RLSPickerForThisFilter}
-    />
+    <StyledContainer>
+      <StyledFormFieldInputWrapper>
+        <FormFieldInput
+          field={fieldDefinition}
+          defaultValue={recordFilter.value}
+          onChange={handleChange}
+          VariablePicker={RLSPicker}
+        />
+      </StyledFormFieldInputWrapper>
+    </StyledContainer>
   );
 };
