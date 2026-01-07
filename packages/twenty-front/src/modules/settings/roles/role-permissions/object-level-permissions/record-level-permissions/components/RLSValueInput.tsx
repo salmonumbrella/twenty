@@ -3,25 +3,26 @@ import styled from '@emotion/styled';
 import { t } from '@lingui/core/macro';
 import { useMemo } from 'react';
 import { isDefined } from 'twenty-shared/utils';
-import { IconEraser, IconVariablePlus } from 'twenty-ui/display';
+import { IconEraser } from 'twenty-ui/display';
 
 import { useObjectMetadataItem } from '@/object-metadata/hooks/useObjectMetadataItem';
 import { CoreObjectNameSingular } from '@/object-metadata/types/CoreObjectNameSingular';
-import { AdvancedFilterCommandMenuValueFormInput } from '@/object-record/advanced-filter/command-menu/components/AdvancedFilterCommandMenuValueFormInput';
+import { formatFieldMetadataItemAsFieldDefinition } from '@/object-metadata/utils/formatFieldMetadataItemAsFieldDefinition';
+import { AdvancedFilterContext } from '@/object-record/advanced-filter/states/context/AdvancedFilterContext';
+import { useApplyObjectFilterDropdownFilterValue } from '@/object-record/object-filter-dropdown/hooks/useApplyObjectFilterDropdownFilterValue';
+import { fieldMetadataItemUsedInDropdownComponentSelector } from '@/object-record/object-filter-dropdown/states/fieldMetadataItemUsedInDropdownComponentSelector';
+import { FormFieldInput } from '@/object-record/record-field/ui/components/FormFieldInput';
 import { useUpsertRecordFilter } from '@/object-record/record-filter/hooks/useUpsertRecordFilter';
 import { currentRecordFiltersComponentState } from '@/object-record/record-filter/states/currentRecordFiltersComponentState';
-import { RLSMeValueSelect } from '@/settings/roles/role-permissions/object-level-permissions/record-level-permissions/components/RLSMeValueSelect';
-import { Dropdown } from '@/ui/layout/dropdown/components/Dropdown';
+import { RLSVariablePicker } from '@/settings/roles/role-permissions/object-level-permissions/record-level-permissions/components/RLSVariablePicker';
 import { useRecoilComponentValue } from '@/ui/utilities/state/component-state/hooks/useRecoilComponentValue';
+import { useContext } from 'react';
+import { type JsonValue } from 'type-fest';
 
 const StyledContainer = styled.div`
   display: flex;
   flex-direction: row;
   align-items: stretch;
-  flex: 1;
-`;
-
-const StyledValueContainer = styled.div`
   flex: 1;
 `;
 
@@ -65,6 +66,8 @@ type RLSValueInputProps = {
 export const RLSValueInput = ({ recordFilterId }: RLSValueInputProps) => {
   const theme = useTheme();
 
+  const { objectMetadataItem } = useContext(AdvancedFilterContext);
+
   const currentRecordFilters = useRecoilComponentValue(
     currentRecordFiltersComponentState,
   );
@@ -73,12 +76,19 @@ export const RLSValueInput = ({ recordFilterId }: RLSValueInputProps) => {
     (filter) => filter.id === recordFilterId,
   );
 
+  const fieldMetadataItemUsedInDropdown = useRecoilComponentValue(
+    fieldMetadataItemUsedInDropdownComponentSelector,
+  );
+
   const { objectMetadataItem: workspaceMemberMetadataItem } =
     useObjectMetadataItem({
       objectNameSingular: CoreObjectNameSingular.WorkspaceMember,
     });
 
   const { upsertRecordFilter } = useUpsertRecordFilter();
+
+  const { applyObjectFilterDropdownFilterValue } =
+    useApplyObjectFilterDropdownFilterValue();
 
   const dynamicValue = recordFilter?.rlsDynamicValue;
   const isDynamicMode = isDefined(dynamicValue);
@@ -156,28 +166,42 @@ export const RLSValueInput = ({ recordFilterId }: RLSValueInputProps) => {
     );
   }
 
+  const fieldDefinition = fieldMetadataItemUsedInDropdown
+    ? formatFieldMetadataItemAsFieldDefinition({
+        field: {
+          ...fieldMetadataItemUsedInDropdown,
+          label: undefined as unknown as string,
+        },
+        objectMetadataItem: objectMetadataItem,
+      })
+    : null;
+
+  if (!isDefined(recordFilter) || !isDefined(fieldDefinition)) {
+    return null;
+  }
+
+  const handleChange = (value: JsonValue) => {
+    applyObjectFilterDropdownFilterValue(String(value));
+  };
+
+  const RLSPickerForThisFilter = ({
+    instanceId,
+  }: {
+    instanceId: string;
+  }) => (
+    <RLSVariablePicker
+      instanceId={instanceId}
+      recordFilterId={recordFilterId}
+      onMeSelect={handleSelectDynamicValue}
+    />
+  );
+
   return (
-    <StyledContainer>
-      <StyledValueContainer>
-        <AdvancedFilterCommandMenuValueFormInput
-          recordFilterId={recordFilterId}
-        />
-      </StyledValueContainer>
-      <Dropdown
-        dropdownId={`workspace-member-field-select-${recordFilterId}`}
-        clickableComponent={
-          <StyledIconContainer aria-label={t`Use dynamic value from current user`}>
-            <IconVariablePlus size={theme.icon.size.sm} />
-          </StyledIconContainer>
-        }
-        dropdownComponents={
-          <RLSMeValueSelect
-            onSelect={handleSelectDynamicValue}
-            recordFilterId={recordFilterId}
-          />
-        }
-        dropdownPlacement="bottom-end"
-      />
-    </StyledContainer>
+    <FormFieldInput
+      field={fieldDefinition}
+      defaultValue={recordFilter.value}
+      onChange={handleChange}
+      VariablePicker={RLSPickerForThisFilter}
+    />
   );
 };
