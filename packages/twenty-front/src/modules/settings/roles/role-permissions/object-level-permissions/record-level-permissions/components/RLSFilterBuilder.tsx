@@ -178,7 +178,7 @@ const RLSFilterBuilderContent = ({
     objectMetadataItem.id,
   ]);
 
-  // Initialize state on mount
+  // Initialize state when settingsDraftRole changes or on mount
   useEffect(() => {
     if (!hasInitializedRef.current) {
       setCurrentRecordFilters(initialFilters);
@@ -197,6 +197,11 @@ const RLSFilterBuilderContent = ({
     setCurrentRecordFilterGroups,
     setRecordFilterUsedInAdvancedFilterDropdownRow,
   ]);
+
+  // Reset initialization flag when the draft role changes (e.g., on page refresh)
+  useEffect(() => {
+    hasInitializedRef.current = false;
+  }, [settingsDraftRole.id]);
 
   // Sync changes back to draft role
   const syncToDraftRole = useCallback(() => {
