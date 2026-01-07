@@ -1,9 +1,9 @@
+import { useTheme } from '@emotion/react';
 import styled from '@emotion/styled';
 import { t } from '@lingui/core/macro';
 import { useMemo } from 'react';
 import { isDefined } from 'twenty-shared/utils';
-import { IconUserCircle } from 'twenty-ui/display';
-import { IconButton } from 'twenty-ui/input';
+import { IconEraser, IconVariablePlus } from 'twenty-ui/display';
 
 import { useObjectMetadataItem } from '@/object-metadata/hooks/useObjectMetadataItem';
 import { CoreObjectNameSingular } from '@/object-metadata/types/CoreObjectNameSingular';
@@ -17,8 +17,7 @@ import { useRecoilComponentValue } from '@/ui/utilities/state/component-state/ho
 const StyledContainer = styled.div`
   display: flex;
   flex-direction: row;
-  align-items: flex-start;
-  gap: ${({ theme }) => theme.spacing(1)};
+  align-items: stretch;
   flex: 1;
 `;
 
@@ -26,22 +25,37 @@ const StyledValueContainer = styled.div`
   flex: 1;
 `;
 
-const StyledDynamicValueDisplay = styled.div`
-  display: flex;
+const StyledIconContainer = styled.div`
   align-items: center;
-  gap: ${({ theme }) => theme.spacing(1)};
-  padding: ${({ theme }) => theme.spacing(2)};
+  display: flex;
+  justify-content: center;
+  background-color: ${({ theme }) => theme.background.transparent.lighter};
+  border-top-right-radius: ${({ theme }) => theme.border.radius.sm};
+  border-bottom-right-radius: ${({ theme }) => theme.border.radius.sm};
   border: 1px solid ${({ theme }) => theme.border.color.medium};
-  border-radius: ${({ theme }) => theme.border.radius.sm};
-  background-color: ${({ theme }) => theme.background.primary};
-  color: ${({ theme }) => theme.font.color.primary};
-  font-size: ${({ theme }) => theme.font.size.md};
-  min-height: ${({ theme }) => theme.spacing(8)};
+  border-left: none;
+  cursor: pointer;
+  padding: ${({ theme }) => theme.spacing(2)};
+  color: ${({ theme }) => theme.font.color.tertiary};
+
+  &:hover {
+    background-color: ${({ theme }) => theme.background.transparent.light};
+  }
 `;
 
-const StyledMeLabel = styled.span`
-  color: ${({ theme }) => theme.color.blue};
-  font-weight: ${({ theme }) => theme.font.weight.medium};
+const StyledReadOnlyInput = styled.div`
+  display: flex;
+  align-items: center;
+  flex: 1;
+  padding: ${({ theme }) => theme.spacing(2)};
+  border: 1px solid ${({ theme }) => theme.border.color.medium};
+  border-top-left-radius: ${({ theme }) => theme.border.radius.sm};
+  border-bottom-left-radius: ${({ theme }) => theme.border.radius.sm};
+  background-color: ${({ theme }) => theme.background.secondary};
+  color: ${({ theme }) => theme.font.color.primary};
+  font-size: ${({ theme }) => theme.font.size.md};
+  height: 32px;
+  box-sizing: border-box;
 `;
 
 type RLSValueInputProps = {
@@ -49,6 +63,8 @@ type RLSValueInputProps = {
 };
 
 export const RLSValueInput = ({ recordFilterId }: RLSValueInputProps) => {
+  const theme = useTheme();
+
   const currentRecordFilters = useRecoilComponentValue(
     currentRecordFiltersComponentState,
   );
@@ -123,26 +139,19 @@ export const RLSValueInput = ({ recordFilterId }: RLSValueInputProps) => {
   };
 
   if (isDynamicMode) {
+    const displayLabel = isDefined(workspaceMemberFieldLabel)
+      ? t`Me` + ` / ${workspaceMemberFieldLabel}`
+      : t`Me`;
+
     return (
       <StyledContainer>
-        <StyledValueContainer>
-          <StyledDynamicValueDisplay>
-            <IconUserCircle size={16} />
-            <StyledMeLabel>{t`Me`}</StyledMeLabel>
-            {isDefined(workspaceMemberFieldLabel) && (
-              <>
-                <span>/</span>
-                <span>{workspaceMemberFieldLabel}</span>
-              </>
-            )}
-          </StyledDynamicValueDisplay>
-        </StyledValueContainer>
-        <IconButton
-          Icon={IconUserCircle}
-          variant="tertiary"
+        <StyledReadOnlyInput>{displayLabel}</StyledReadOnlyInput>
+        <StyledIconContainer
           onClick={handleResetToStaticValue}
           aria-label={t`Reset to static value`}
-        />
+        >
+          <IconEraser size={theme.icon.size.sm} />
+        </StyledIconContainer>
       </StyledContainer>
     );
   }
@@ -157,11 +166,9 @@ export const RLSValueInput = ({ recordFilterId }: RLSValueInputProps) => {
       <Dropdown
         dropdownId={`workspace-member-field-select-${recordFilterId}`}
         clickableComponent={
-          <IconButton
-            Icon={IconUserCircle}
-            variant="tertiary"
-            aria-label={t`Use dynamic value from current user`}
-          />
+          <StyledIconContainer aria-label={t`Use dynamic value from current user`}>
+            <IconVariablePlus size={theme.icon.size.sm} />
+          </StyledIconContainer>
         }
         dropdownComponents={
           <RLSMeValueSelect

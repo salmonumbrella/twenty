@@ -11,7 +11,6 @@ import { v4 } from 'uuid';
 import { ActionButton } from '@/action-menu/actions/display/components/ActionButton';
 import { availableFieldMetadataItemsForFilterFamilySelector } from '@/object-metadata/states/availableFieldMetadataItemsForFilterFamilySelector';
 import { type ObjectMetadataItem } from '@/object-metadata/types/ObjectMetadataItem';
-import { AdvancedFilterCommandMenuColumn } from '@/object-record/advanced-filter/command-menu/components/AdvancedFilterCommandMenuColumn';
 import { AdvancedFilterCommandMenuLogicalOperatorCell } from '@/object-record/advanced-filter/command-menu/components/AdvancedFilterCommandMenuLogicalOperatorCell';
 import { AdvancedFilterCommandMenuRecordFilterOperandSelect } from '@/object-record/advanced-filter/command-menu/components/AdvancedFilterCommandMenuRecordFilterOperandSelect';
 import { AdvancedFilterRecordFilterOptionsDropdown } from '@/object-record/advanced-filter/components/AdvancedFilterRecordFilterOptionsDropdown';
@@ -57,15 +56,15 @@ const StyledContainer = styled.div`
 const StyledFiltersContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing(6)};
+  gap: ${({ theme }) => theme.spacing(2)};
   width: 100%;
 `;
 
-const StyledRowContainer = styled.div`
+const StyledFilterRow = styled.div`
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
-  gap: ${({ theme }) => theme.spacing(1)};
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing(2)};
 `;
 
 type RLSFilterBuilderProps = {
@@ -358,22 +357,20 @@ const RLSFilterBuilderContent = ({
         ),
       }}
     >
-      <AdvancedFilterCommandMenuColumn>
-        <StyledRowContainer>
-          <AdvancedFilterCommandMenuLogicalOperatorCell
-            index={index}
-            recordFilterGroup={recordFilterGroup}
-          />
-          <AdvancedFilterRecordFilterOptionsDropdown
-            recordFilterId={recordFilter.id}
-          />
-        </StyledRowContainer>
+      <StyledFilterRow>
+        <AdvancedFilterCommandMenuLogicalOperatorCell
+          index={index}
+          recordFilterGroup={recordFilterGroup}
+        />
         <RLSFieldSelect recordFilterId={recordFilter.id} />
         <AdvancedFilterCommandMenuRecordFilterOperandSelect
           recordFilterId={recordFilter.id}
         />
         <RLSValueInput recordFilterId={recordFilter.id} />
-      </AdvancedFilterCommandMenuColumn>
+        <AdvancedFilterRecordFilterOptionsDropdown
+          recordFilterId={recordFilter.id}
+        />
+      </StyledFilterRow>
     </ObjectFilterDropdownComponentInstanceContext.Provider>
   );
 
