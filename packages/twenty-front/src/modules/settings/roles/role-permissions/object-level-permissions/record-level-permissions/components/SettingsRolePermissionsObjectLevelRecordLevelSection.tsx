@@ -7,7 +7,8 @@ import { type ObjectMetadataItem } from '@/object-metadata/types/ObjectMetadataI
 import { RLSFilterBuilder } from '@/settings/roles/role-permissions/object-level-permissions/record-level-permissions/components/RLSFilterBuilder';
 
 const StyledContent = styled.div`
-  padding-top: ${({ theme }) => theme.spacing(2)};
+  padding-top: ${({ theme }) => theme.spacing(4)};
+  padding-bottom: ${({ theme }) => theme.spacing(2)};
 `;
 
 type SettingsRolePermissionsObjectLevelRecordLevelSectionProps = {

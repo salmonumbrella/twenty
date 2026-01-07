@@ -1,7 +1,5 @@
 import { useObjectMetadataItemById } from '@/object-metadata/hooks/useObjectMetadataItemById';
 import { SettingsPageContainer } from '@/settings/components/SettingsPageContainer';
-import { SettingsRolePermissionsObjectLevelObjectFieldPermissionTable } from '@/settings/roles/role-permissions/object-level-permissions/field-permissions/components/SettingsRolePermissionsObjectLevelObjectFieldPermissionTable';
-import { SettingsRolePermissionsObjectLevelObjectFormObjectLevel } from '@/settings/roles/role-permissions/object-level-permissions/object-form/components/SettingsRolePermissionsObjectLevelObjectFormObjectLevel';
 import { SettingsRolePermissionsObjectLevelRecordLevelSection } from '@/settings/roles/role-permissions/object-level-permissions/record-level-permissions/components/SettingsRolePermissionsObjectLevelRecordLevelSection';
 import { settingsDraftRoleFamilyState } from '@/settings/roles/states/settingsDraftRoleFamilyState';
 import { SubMenuTopBarContainer } from '@/ui/layout/page/components/SubMenuTopBarContainer';
@@ -13,8 +11,8 @@ import { SettingsPath } from 'twenty-shared/types';
 import { getSettingsPath, isDefined } from 'twenty-shared/utils';
 import { Button } from 'twenty-ui/input';
 import {
-    FeatureFlagKey,
-    useFindOneAgentQuery,
+  FeatureFlagKey,
+  useFindOneAgentQuery,
 } from '~/generated-metadata/graphql';
 
 type SettingsRolePermissionsObjectLevelObjectFormProps = {
@@ -114,14 +112,14 @@ export const SettingsRolePermissionsObjectLevelObjectForm = ({
       }
     >
       <SettingsPageContainer>
-        <SettingsRolePermissionsObjectLevelObjectFormObjectLevel
+        {/* <SettingsRolePermissionsObjectLevelObjectFormObjectLevel
           objectMetadataItem={objectMetadataItem}
           roleId={roleId}
         />
         <SettingsRolePermissionsObjectLevelObjectFieldPermissionTable
           objectMetadataItem={objectMetadataItem}
           roleId={roleId}
-        />
+        /> */}
         {isRowLevelPermissionPredicatesEnabled && (
           <SettingsRolePermissionsObjectLevelRecordLevelSection
             objectMetadataItem={objectMetadataItem}

@@ -64,7 +64,11 @@ const StyledFilterRow = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing(2)};
+  gap: ${({ theme }) => theme.spacing(4)};
+`;
+
+const StyledActionButtonWrapper = styled.div`
+  margin-top: ${({ theme }) => theme.spacing(2)};
 `;
 
 type RLSFilterBuilderProps = {
@@ -77,6 +81,8 @@ const RLSFilterBuilderContent = ({
   objectMetadataItem,
 }: RLSFilterBuilderProps) => {
   const hasInitializedRef = useRef(false);
+  const lastInitializedRoleIdRef = useRef<string>('');
+  const lastInitializedObjectIdRef = useRef<string>('');
 
   const settingsDraftRole = useRecoilValue(
     settingsDraftRoleFamilyState(roleId),
@@ -178,9 +184,21 @@ const RLSFilterBuilderContent = ({
     objectMetadataItem.id,
   ]);
 
-  // Initialize state when settingsDraftRole changes or on mount
+  // Initialize state when role/object changes or when draft role is first populated
   useEffect(() => {
-    if (!hasInitializedRef.current) {
+    const isRoleOrObjectChanged =
+      lastInitializedRoleIdRef.current !== roleId ||
+      lastInitializedObjectIdRef.current !== objectMetadataItem.id;
+
+    const isDraftRolePopulated = settingsDraftRole.id === roleId;
+
+    // Only initialize if draft role is populated AND:
+    // 1. Role or object changed, OR
+    // 2. We haven't initialized yet (handles page refresh)
+    const shouldInitialize =
+      isDraftRolePopulated && (isRoleOrObjectChanged || !hasInitializedRef.current);
+
+    if (shouldInitialize) {
       setCurrentRecordFilters(initialFilters);
       setCurrentRecordFilterGroups(initialFilterGroups);
 
@@ -189,19 +207,19 @@ const RLSFilterBuilderContent = ({
       }
 
       hasInitializedRef.current = true;
+      lastInitializedRoleIdRef.current = roleId;
+      lastInitializedObjectIdRef.current = objectMetadataItem.id;
     }
   }, [
+    roleId,
+    objectMetadataItem.id,
+    settingsDraftRole.id,
     initialFilters,
     initialFilterGroups,
     setCurrentRecordFilters,
     setCurrentRecordFilterGroups,
     setRecordFilterUsedInAdvancedFilterDropdownRow,
   ]);
-
-  // Reset initialization flag when the draft role changes (e.g., on page refresh)
-  useEffect(() => {
-    hasInitializedRef.current = false;
-  }, [settingsDraftRole.id]);
 
   // Sync changes back to draft role
   const syncToDraftRole = useCallback(() => {
@@ -390,15 +408,17 @@ const RLSFilterBuilderContent = ({
                 renderFilterRow(child, index, rootRecordFilterGroup),
             )}
           </StyledFiltersContainer>
-          <ActionButton
-            action={{
-              Icon: IconPlus,
-              label: t`Add rule`,
-              shortLabel: t`Add rule`,
-              key: 'add-rule',
-            }}
-            onClick={() => handleAddFilter(rootRecordFilterGroup)}
-          />
+          <StyledActionButtonWrapper>
+            <ActionButton
+              action={{
+                Icon: IconPlus,
+                label: t`Add rule`,
+                shortLabel: t`Add rule`,
+                key: 'add-rule',
+              }}
+              onClick={() => handleAddFilter(rootRecordFilterGroup)}
+            />
+          </StyledActionButtonWrapper>
         </StyledContainer>
       ) : (
         <Button
