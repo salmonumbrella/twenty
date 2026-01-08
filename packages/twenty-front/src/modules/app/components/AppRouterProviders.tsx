@@ -14,7 +14,7 @@ import { ApolloCoreProvider } from '@/object-metadata/components/ApolloCoreProvi
 import { ObjectMetadataItemsLoadEffect } from '@/object-metadata/components/ObjectMetadataItemsLoadEffect';
 import { ObjectMetadataItemsProvider } from '@/object-metadata/components/ObjectMetadataItemsProvider';
 import { PrefetchDataProvider } from '@/prefetch/components/PrefetchDataProvider';
-import { SubscriptionProvider } from '@/subscription/components/SubscriptionProvider';
+import { SSEProvider } from '@/sse-db-event/components/SSEProvider';
 import { SupportChatEffect } from '@/support/components/SupportChatEffect';
 import { DialogManager } from '@/ui/feedback/dialog-manager/components/DialogManager';
 import { DialogComponentInstanceContext } from '@/ui/feedback/dialog-manager/contexts/DialogComponentInstanceContext';
@@ -46,7 +46,7 @@ export const AppRouterProviders = () => {
             <ChromeExtensionSidecarProvider>
               <UserProvider>
                 <AuthProvider>
-                  <SubscriptionProvider>
+                  <SSEProvider>
                     <ApolloCoreProvider>
                       <ObjectMetadataItemsLoadEffect />
                       <ObjectMetadataItemsProvider>
@@ -74,7 +74,7 @@ export const AppRouterProviders = () => {
                         <PageChangeEffect />
                       </ObjectMetadataItemsProvider>
                     </ApolloCoreProvider>
-                  </SubscriptionProvider>
+                  </SSEProvider>
                 </AuthProvider>
               </UserProvider>
             </ChromeExtensionSidecarProvider>
