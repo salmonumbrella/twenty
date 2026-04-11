@@ -49,8 +49,10 @@ jobs:
       - name: Setup i18n-docs branch
         if: github.event_name != 'pull_request'
         run: |
-          git fetch origin i18n-docs || true
-          git checkout -B i18n-docs origin/i18n-docs || git checkout -b i18n-docs
+          # Recreate the automation branch from the current main branch so
+          # stale i18n-docs history can't miss newer workflow scripts/config.
+          git fetch origin main
+          git checkout -B i18n-docs origin/main
 
       - name: Configure git
         run: |
@@ -138,7 +140,7 @@ jobs:
 
       - name: Push changes
         if: github.event_name != 'pull_request' && steps.check_changes.outputs.changes_detected == 'true'
-        run: git push origin HEAD:i18n-docs
+        run: git push --force-with-lease origin HEAD:i18n-docs
 
       - name: Create pull request
         if: github.event_name != 'pull_request' && steps.check_changes.outputs.changes_detected == 'true'
