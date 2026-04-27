@@ -59,8 +59,20 @@ jobs:
           labels: ai, automated
           delete-branch: true
 
-      - name: Trigger automerge
+      - name: Check automerge token
+        id: automerge-token
         if: steps.changes.outputs.changed == 'true'
+        env:
+          TWENTY_INFRA_TOKEN: ${{ secrets.TWENTY_INFRA_TOKEN }}
+        run: |
+          if [ -n "$TWENTY_INFRA_TOKEN" ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Trigger automerge
+        if: steps.changes.outputs.changed == 'true' && steps.automerge-token.outputs.available == 'true'
         uses: peter-evans/repository-dispatch@v2
         with:
           token: ${{ secrets.TWENTY_INFRA_TOKEN }}
